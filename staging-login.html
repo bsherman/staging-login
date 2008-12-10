@@ -24,7 +24,7 @@ protect, include the following in your httpd.conf:
     RewriteEngine On
     RewriteCond %{HTTP_COOKIE} !staging-login
     RewriteCond %{REQUEST_FILENAME} !/staging-login.html
-    RewriteRule ^(.*)$ /staging-login.html? [R,L]
+    RewriteRule ^(.*)$ /staging-login.html?ref=$1 [R,L]
 --------SNIP---------
 
 Note that this is not intended to be a high security mechanism, only a 
@@ -33,8 +33,13 @@ password hash in this page. If you do want to keep out any users, ensure you
 change the username and password from the defaults below, else they'll be able
 to view the source and automatically know the username and password. 
 
+Even more, this is not secure because at best, it's security through obscurity. 
+Anyone reading this file will know your "secure" cookie name and valid required 
+for site access. So again, this is inteded only as a simple deterrent and is not
+a true secure system.
+
 Note: For information on mod_rewrite and where it directives may be used 
-see: http://httpd.apache.org/docs/2.0/mod/mod_rewrite.html 
+see: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html 
 -->
 <script type="text/javascript" lang="Javascript">
 <!--
@@ -46,7 +51,22 @@ function login() {
     //document.loginform.username.value = hash_pass; // simple way to print out a hash
     //alert(hash_user+"\n"+hash_pass); // another simple way to print out hashes
     //return false;
-
+    
+	var ref = "/";
+	if ('' != location.search) {
+		var params = location.search.substring(1).split('&');
+		for (var i = 0; i < params.length; i++) {
+			if (0 == params[i].indexOf('ref')) {
+				ref = params[i].split('=')[1];
+			}
+		}
+	}
+	if ("/" == ref) {
+		if ("" != document.referrer) {
+			ref = document.referrer;
+		}
+	}
+	
     hash_user = '21232f297a57a5a743894a0e4a801fc3'; //default username: admin
     hash_pass = '5f4dcc3b5aa765d61d8327deb882cf99'; //default password: password
     hash_unew = hex_md5(document.loginform.username.value);
