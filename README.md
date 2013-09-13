@@ -18,13 +18,14 @@ and no external dependencies.
 
 At any location where mod\_rewrite directives may be used and which you wish to
 protect, include the following in your httpd.conf:
+```
 --------SNIP---------
     RewriteEngine On
     RewriteCond %{HTTP_COOKIE} !staging-login
     RewriteCond %{REQUEST_FILENAME} !/staging-login.html
     RewriteRule ^(.*)$ /staging-login.html?ref=$1 [R,L]
 --------SNIP---------
-
+```
 Note that this is not intended to be a high security mechanism, only a
 simple deterrent messure. As such, I'm making a known faux-paux by storing the
 password hash in this page. If you do want to keep out any users, ensure you
